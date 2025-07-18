@@ -1,0 +1,14 @@
+{
+  "appName": "My Go Server",
+  "version": "1.0.0",
+  "environment": "development",
+  "features": {
+    "fileServing": true,
+    "logging": true,
+    "security": true
+  },
+  "limits": {
+    "maxFileSize": "100MB",
+    "maxConnections": 1000
+  }
+}
