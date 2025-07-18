@@ -3,6 +3,7 @@ package main
 // File server for serving static files and handling file requests
 // http://localhost:8080/static/images/image6.png
 // http://localhost:8080/static/videos/fed.mp4
+// http://localhost:8080/static/web/index.html
 
 import (
 	"log"
@@ -10,6 +11,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"go-server/api"
 
 	"github.com/gorilla/mux"
 )
@@ -64,65 +67,65 @@ func serveFile(w http.ResponseWriter, r *http.Request) {
     http.ServeFile(w, r, filePath)
 }
 
-// API endpoint to serve products data
-func getProducts(w http.ResponseWriter, r *http.Request) {
-    log.Printf("API request: GET /api/products")
+// // API endpoint to serve products data
+// func getProducts(w http.ResponseWriter, r *http.Request) {
+//     log.Printf("API request: GET /api/products")
     
-    // Read the JSON file
-    data, err := os.ReadFile("static/data/products.json")
-    if err != nil {
-        log.Printf("Error reading products.json: %v", err)
-        http.Error(w, "Internal server error", http.StatusInternalServerError)
-        return
-    }
+//     // Read the JSON file
+//     data, err := os.ReadFile("static/data/products.json")
+//     if err != nil {
+//         log.Printf("Error reading products.json: %v", err)
+//         http.Error(w, "Internal server error", http.StatusInternalServerError)
+//         return
+//     }
     
-    // Set proper headers for JSON response
-    w.Header().Set("Content-Type", "application/json")
-    w.Header().Set("Access-Control-Allow-Origin", "*") // Enable CORS
+//     // Set proper headers for JSON response
+//     w.Header().Set("Content-Type", "application/json")
+//     w.Header().Set("Access-Control-Allow-Origin", "*") // Enable CORS
     
-    // Write JSON response
-    w.Write(data)
-}
+//     // Write JSON response
+//     w.Write(data)
+// }
 
-// API endpoint to serve config data
-func getConfig(w http.ResponseWriter, r *http.Request) {
-    log.Printf("API request: GET /api/config")
+// // API endpoint to serve config data
+// func getConfig(w http.ResponseWriter, r *http.Request) {
+//     log.Printf("API request: GET /api/config")
     
-    // Read the JSON file
-    data, err := os.ReadFile("static/data/config.json")
-    if err != nil {
-        log.Printf("Error reading config.json: %v", err)
-        http.Error(w, "Internal server error", http.StatusInternalServerError)
-        return
-    }
+//     // Read the JSON file
+//     data, err := os.ReadFile("static/data/config.json")
+//     if err != nil {
+//         log.Printf("Error reading config.json: %v", err)
+//         http.Error(w, "Internal server error", http.StatusInternalServerError)
+//         return
+//     }
     
-    // Set proper headers for JSON response
-    w.Header().Set("Content-Type", "application/json")
-    w.Header().Set("Access-Control-Allow-Origin", "*") // Enable CORS
+//     // Set proper headers for JSON response
+//     w.Header().Set("Content-Type", "application/json")
+//     w.Header().Set("Access-Control-Allow-Origin", "*") // Enable CORS
     
-    // Write JSON response
-    w.Write(data)
-}
+//     // Write JSON response
+//     w.Write(data)
+// }
 
-// API endpoint to serve users data
-func getUsers(w http.ResponseWriter, r *http.Request) {
-    log.Printf("API request: GET /api/users")
+// // API endpoint to serve users data
+// func getUsers(w http.ResponseWriter, r *http.Request) {
+//     log.Printf("API request: GET /api/users")
     
-    // Read the JSON file
-    data, err := os.ReadFile("static/data/users.json")
-    if err != nil {
-        log.Printf("Error reading users.json: %v", err)
-        http.Error(w, "Internal server error", http.StatusInternalServerError)
-        return
-    }
+//     // Read the JSON file
+//     data, err := os.ReadFile("static/data/users.json")
+//     if err != nil {
+//         log.Printf("Error reading users.json: %v", err)
+//         http.Error(w, "Internal server error", http.StatusInternalServerError)
+//         return
+//     }
     
-    // Set proper headers for JSON response
-    w.Header().Set("Content-Type", "application/json")
-    w.Header().Set("Access-Control-Allow-Origin", "*") // Enable CORS
+//     // Set proper headers for JSON response
+//     w.Header().Set("Content-Type", "application/json")
+//     w.Header().Set("Access-Control-Allow-Origin", "*") // Enable CORS
     
-    // Write JSON response
-    w.Write(data)
-}
+//     // Write JSON response
+//     w.Write(data)
+// }
 
 func main() {
     cfg := loadConfig()
@@ -133,10 +136,8 @@ func main() {
     r.HandleFunc("/files/{type}/{name}", serveFile).Methods("GET")
     r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
     
-    // API endpoints
-    r.HandleFunc("/api/products", getProducts).Methods("GET")
-    r.HandleFunc("/api/config", getConfig).Methods("GET")
-    r.HandleFunc("/api/users", getUsers).Methods("GET")
+    // Setup API routes
+    api.SetupAPIRoutes(r)
 
     log.Printf("Starting server on port %s...", cfg.Port)
     log.Printf("Static files will be served from ./static/")
